@@ -27,30 +27,36 @@ function Home() {
   const [guests, setGuests] = useState(2);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        // Сохраняем базовые данные (телефон подтянется в профиле)
-        setUser({
-          ...user,
-          uid: currentUser.uid,
-          name: currentUser.displayName,
-          email: currentUser.email,
-          photo: currentUser.photoURL,
-        });
-      } else {
-        logout();
-      }
-    });
-    return () => unsubscribe();
-  }, [setUser, logout]);
+      // Ловим результат возвращения со страницы Google
+      getRedirectResult(auth).catch((error) => {
+        console.error("Ошибка после возвращения от Google:", error);
+        alert("Не удалось войти. Попробуйте еще раз.");
+      });
+
+      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        if (currentUser) {
+          setUser({
+            ...user,
+            uid: currentUser.uid,
+            name: currentUser.displayName,
+            email: currentUser.email,
+            photo: currentUser.photoURL,
+          });
+        } else {
+          logout();
+        }
+      });
+      return () => unsubscribe();
+    }, [setUser, logout]);
 
   const handleLogin = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (error) {
-      console.error("Ошибка при входе:", error);
-    }
-  };
+      try {
+        // Меняем метод на Redirect (работает железобетонно в PWA)
+        await signInWithRedirect(auth, googleProvider);
+      } catch (error) {
+        console.error("Ошибка при входе:", error);
+      }
+    };
 
   const selectedMood = MOODS.find(m => m.id === selectedMoodId);
   const totalPrice = selectedMood ? selectedMood.basePrice + (hasIce ? 500 : 0) : 0;
