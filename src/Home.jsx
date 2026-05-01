@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Flame, Wind, Sparkles, Citrus, Skull, X, Snowflake, Users, Activity } from 'lucide-react';
-import { signInWithPopup, onAuthStateChanged } from 'firebase/auth';
+import { signInWithRedirect, getRedirectResult, onAuthStateChanged } from 'firebase/auth';
 import { auth, googleProvider } from './firebase';
 import { useAppStore } from './store';
 import { motion, AnimatePresence } from 'framer-motion';

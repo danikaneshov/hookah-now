@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { signInWithRedirect, getRedirectResult, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 // Сюда потом скопируем настройки из Firebase Console
