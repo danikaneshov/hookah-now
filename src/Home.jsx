@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Flame, Wind, Sparkles, Citrus, Skull, X, Snowflake, Users, Activity } from 'lucide-react';
 import { signInWithRedirect, getRedirectResult, onAuthStateChanged } from 'firebase/auth';
@@ -35,13 +35,13 @@ function Home() {
 
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
         if (currentUser) {
-          setUser({
-            ...user,
+          setUser((prev) => ({
+            ...prev,
             uid: currentUser.uid,
             name: currentUser.displayName,
             email: currentUser.email,
             photo: currentUser.photoURL,
-          });
+          }));
         } else {
           logout();
         }

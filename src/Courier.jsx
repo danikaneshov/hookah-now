@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import { db } from './firebase';
-import { MapPin, Phone, ShieldAlert, Check, ChevronRight, Clock } from 'lucide-react';
+import { MapPin, Phone, ShieldAlert, Check, Clock } from 'lucide-react';
 
 function Courier() {
   const [orders, setOrders] = useState([]);

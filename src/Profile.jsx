@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { doc, getDoc, setDoc, collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from './firebase';
 import { signOut } from 'firebase/auth';
 import { useAppStore } from './store';
-import { ArrowLeft, Phone, History, LogOut, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Phone, History, LogOut, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 function Profile() {
@@ -27,7 +27,7 @@ function Profile() {
         if (userSnap.exists() && userSnap.data().phone) {
           const fetchedPhone = userSnap.data().phone;
           setPhone(fetchedPhone);
-          setUser({ ...user, phone: fetchedPhone }); // Обновляем в глобальном хранилище
+          setUser((prev) => ({ ...prev, phone: fetchedPhone })); // Обновляем в глобальном хранилище
         }
 
         // 2. Достаем историю заказов именно этого пользователя
@@ -49,7 +49,7 @@ function Profile() {
     };
 
     fetchUserData();
-  }, [user?.uid]);
+  }, [user?.uid, setUser]);
 
   const handleSavePhone = async () => {
     if (phone.length < 10) return alert('Введите корректный номер телефона');
