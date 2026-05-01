@@ -51,11 +51,10 @@ function Home() {
 
   const handleLogin = async () => {
       try {
-        alert("Кнопка сработала! Ждем ответа от Google...");
+        // Меняем метод на Redirect (работает железобетонно в PWA)
         await signInWithRedirect(auth, googleProvider);
       } catch (error) {
         console.error("Ошибка при входе:", error);
-        alert("Ошибка Firebase: " + error.message); // Выведет точную причину
       }
     };
 
