@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Flame, Wind, Sparkles, Citrus, Skull, X, Snowflake, Users, Activity } from 'lucide-react';
+// Импортируем Redirect и getRedirectResult специально для PWA
 import { signInWithRedirect, getRedirectResult, onAuthStateChanged } from 'firebase/auth';
 import { auth, googleProvider } from './firebase';
 import { useAppStore } from './store';
@@ -17,51 +18,49 @@ function Home() {
   const navigate = useNavigate();
   const { user, setUser, logout, setOrder } = useAppStore();
   
-  // Состояния выбора
   const [selectedMoodId, setSelectedMoodId] = useState(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   
-  // Состояния конфигуратора
   const [strength, setStrength] = useState(5);
   const [hasIce, setHasIce] = useState(false);
   const [guests, setGuests] = useState(2);
 
   useEffect(() => {
-      // Ловим результат возвращения со страницы Google
-      getRedirectResult(auth).catch((error) => {
-        console.error("Ошибка после возвращения от Google:", error);
-        alert("Не удалось войти. Попробуйте еще раз.");
-      });
+    // 1. Ловим результат редиректа от Google (критично для телефонов)
+    getRedirectResult(auth).catch((error) => {
+      console.error("Ошибка редиректа:", error);
+    });
 
-      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-        if (currentUser) {
-          setUser((prev) => ({
-            ...prev,
-            uid: currentUser.uid,
-            name: currentUser.displayName,
-            email: currentUser.email,
-            photo: currentUser.photoURL,
-          }));
-        } else {
-          logout();
-        }
-      });
-      return () => unsubscribe();
-    }, [setUser, logout]);
+    // 2. Слушаем изменение состояния пользователя
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser({
+          ...user,
+          uid: currentUser.uid,
+          name: currentUser.displayName,
+          email: currentUser.email,
+          photo: currentUser.photoURL,
+        });
+      } else {
+        logout();
+      }
+    });
+    
+    return () => unsubscribe();
+  }, [setUser, logout]);
 
   const handleLogin = async () => {
-      try {
-        // Меняем метод на Redirect (работает железобетонно в PWA)
-        await signInWithRedirect(auth, googleProvider);
-      } catch (error) {
-        console.error("Ошибка при входе:", error);
-      }
-    };
+    try {
+      // Запускаем перенаправление на страницу Google
+      await signInWithRedirect(auth, googleProvider);
+    } catch (error) {
+      console.error("Ошибка при старте входа:", error);
+    }
+  };
 
   const selectedMood = MOODS.find(m => m.id === selectedMoodId);
   const totalPrice = selectedMood ? selectedMood.basePrice + (hasIce ? 500 : 0) : 0;
 
-  // Экран неавторизованного пользователя
   if (!user) {
     return (
       <div className="min-h-screen bg-dark flex flex-col items-center justify-center p-6">
@@ -82,7 +81,6 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-dark text-white p-6 pb-24 relative overflow-hidden">
-      {/* Шапка с переходом в профиль */}
       <header className="flex justify-between items-center mb-8">
         <div 
           onClick={() => navigate('/profile')}
@@ -98,7 +96,6 @@ function Home() {
 
       <h1 className="text-2xl font-bold mb-6">Какое настроение сегодня?</h1>
 
-      {/* Сетка настроений */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {MOODS.map((mood, index) => {
           const Icon = mood.icon;
@@ -127,7 +124,6 @@ function Home() {
         })}
       </div>
 
-      {/* Кнопка "Настроить и заказать" */}
       <AnimatePresence>
         {selectedMoodId && !isSheetOpen && (
           <motion.div 
@@ -146,7 +142,6 @@ function Home() {
         )}
       </AnimatePresence>
 
-      {/* Bottom Sheet (Шторка конфигуратора) */}
       <AnimatePresence>
         {isSheetOpen && (
           <>
