@@ -5,7 +5,7 @@ import { getFirestore } from "firebase/firestore";
 // Сюда потом скопируем настройки из Firebase Console
 const firebaseConfig = {
   apiKey: "AIzaSyAkIJaJoKaLGPAs68Tibdtk4tY-ckkqqN0",
-  authDomain: "delivery-hookah-60e88.firebaseapp.com",
+  authDomain: "hookah-now.vercel.app",
   projectId: "delivery-hookah-60e88",
   storageBucket: "delivery-hookah-60e88.firebasestorage.app",
   messagingSenderId: "342314450326",
